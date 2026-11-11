@@ -21,3 +21,4 @@ echo "=== Informações de Rede ==="
 echo "Porta Ethernet (eth0): Conecte ao UR3 (IP do robô: 192.168.1.100)"
 echo "Wi-Fi (wlan0): Hotspot ativo para celulares e PCs."
 echo "Pronto! O UR_PICASSO responderá na porta 5000."
+

@@ -113,3 +113,4 @@ O arquivo `config.json` centraliza todos os parâmetros do sistema:
 
 - Na tela da dashboard, durante a execução, há o botão vermelho **"⏹️ Parar / Cancelar Desenho"** que envia interrupção instantânea para o robô.
 - O botão físico de **E-Stop** da controladora do UR3 sempre tem prioridade absoluta de segurança.
+
