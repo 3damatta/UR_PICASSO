@@ -1,0 +1,78 @@
+{
+  "robot": {
+    "ip": "192.168.1.100",
+    "primary_port": 30002,
+    "realtime_port": 30003,
+    "sync_port": 50007,
+    "gripper_port": 41414,
+    "gripper_enabled": true,
+    "gripper_hold_width_mm": 35.0,
+    "gripper_force_n": 40.0
+  },
+  "paper": {
+    "format": "A6",
+    "width_mm": 105.0,
+    "height_mm": 148.0,
+    "margin_top_mm": 20.0,
+    "margin_bottom_mm": 20.0,
+    "margin_sides_mm": 6.0
+  },
+  "calibration": {
+    "origin_pose": [
+      -0.200,
+      -0.350,
+      0.085,
+      2.22,
+      -2.22,
+      0.0
+    ],
+    "x_axis_vector": [1.0, 0.0, 0.0],
+    "y_axis_vector": [0.0, 1.0, 0.0],
+    "z_normal_vector": [0.0, 0.0, 1.0],
+    "z_draw_offset_m": 0.000,
+    "z_lift_m": 0.005,
+    "home_joints": [
+      -1.5708,
+      -1.5708,
+      1.5708,
+      -1.5708,
+      -1.5708,
+      0.0
+    ]
+  },
+  "motion": {
+    "draw_speed": 0.22,
+    "draw_accel": 1.2,
+    "travel_speed": 0.35,
+    "travel_accel": 1.5,
+    "blend_radius": 0.002
+  },
+  "drawing": {
+    "speed_profile": "ultra_fast",
+    "profiles": {
+      "ultra_fast": {
+        "max_strokes": 80,
+        "min_stroke_length_mm": 2.5,
+        "poly_epsilon_ratio": 0.0040,
+        "approx_time_s": 45
+      },
+      "balanced": {
+        "max_strokes": 140,
+        "min_stroke_length_mm": 1.8,
+        "poly_epsilon_ratio": 0.0025,
+        "approx_time_s": 90
+      }
+    }
+  },
+  "camera": {
+    "device_index": 0,
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  },
+  "web": {
+    "host": "0.0.0.0",
+    "port": 5000
+  }
+}
+

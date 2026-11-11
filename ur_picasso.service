@@ -1,0 +1,15 @@
+[Unit]
+Description=UR_Picasso - Servidor do Robo Retratista
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/UR_PICASSO
+ExecStart=/home/pi/UR_PICASSO/start.sh
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

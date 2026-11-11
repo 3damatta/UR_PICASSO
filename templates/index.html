@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>UR-Picasso 🎨 Robô Retratista</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Topbar com status do robô e botão de operador -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon">🤖🎨</span>
+        <div>
+          <h1>UR-Picasso</h1>
+          <p class="subtitle">Retratos ao Vivo • Papel {{ paper_format }}</p>
+        </div>
+      </div>
+      
+      <div class="topbar-actions">
+        <div id="robot-status-badge" class="badge badge-offline">
+          <span class="status-dot"></span>
+          <span id="robot-status-text">Conectando...</span>
+        </div>
+        <button id="btn-operator-modal" class="btn-icon" title="Menu do Operador">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Conteúdo Principal em Etapas (Tabs) -->
+    <main class="main-content">
+
+      <!-- ETAPA 1: CAPTURA OU ENVIO DA FOTO -->
+      <section id="step-capture" class="view-section active">
+        <div class="mode-selector">
+          <button id="tab-camera" class="mode-btn active">📷 Câmera do Robô</button>
+          <button id="tab-upload" class="mode-btn">📁 Enviar do Celular</button>
+        </div>
+
+        <!-- Painel 1A: Câmera com Live Feed -->
+        <div id="camera-panel" class="capture-card">
+          <div class="video-wrapper">
+            <img id="live-stream" src="/video_feed" alt="Transmissão ao Vivo da Webcam">
+            <div id="countdown-overlay" class="countdown-overlay hidden">
+              <span id="countdown-number">3</span>
+            </div>
+            <div class="face-guide-overlay">
+              <div class="face-oval"></div>
+              <p>Posicione seu rosto dentro da moldura</p>
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <button id="btn-snap" class="btn-primary btn-large">
+              <span class="btn-icon-inside">📸</span> Tirar Foto Agora
+            </button>
+          </div>
+        </div>
+
+        <!-- Painel 1B: Upload de Arquivo -->
+        <div id="upload-panel" class="capture-card hidden">
+          <div class="upload-dropzone" id="dropzone">
+            <input type="file" id="file-input" accept="image/*" class="file-hidden">
+            <div class="dropzone-content">
+              <span class="upload-icon">📤</span>
+              <h3>Selecione uma foto da sua galeria</h3>
+              <p>Fotos com boa iluminação e rosto de frente ficam fantásticas!</p>
+              <button type="button" class="btn-secondary" onclick="document.getElementById('file-input').click()">
+                Escolher Arquivo
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ETAPA 2: PRÉ-VISUALIZAÇÃO E AJUSTE DO TRAÇO -->
+      <section id="step-preview" class="view-section hidden">
+        <div class="section-header">
+          <h2>Seu Retrato em Traço Cartoon</h2>
+          <p>O robô desenhará estas linhas exatas na folha A6</p>
+        </div>
+
+        <div class="preview-comparison">
+          <div class="preview-box">
+            <div class="preview-badge">Visualização Vetorial</div>
+            <div id="svg-container" class="svg-wrapper">
+              <!-- SVG vetorial inserido dinamicamente via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Controles de Perfil e Velocidade -->
+        <div class="style-selector-card">
+          <label class="control-label">Velocidade de Execução:</label>
+          <div class="profile-options">
+            <button class="profile-btn active" data-profile="ultra_fast">
+              <span class="p-title">⚡ Ultra Rápido</span>
+              <span class="p-desc">~45 seg • Traços essenciais</span>
+            </button>
+            <button class="profile-btn" data-profile="balanced">
+              <span class="p-title">🎨 Equilibrado</span>
+              <span class="p-desc">~90 seg • Mais detalhes</span>
+            </button>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="stat-label">Total de Traços:</span>
+              <span id="stat-strokes" class="stat-value">--</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Tempo Estimado:</span>
+              <span id="stat-time" class="stat-value">-- s</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar-split">
+          <button id="btn-back-capture" class="btn-ghost">
+            ↩ Tirar Outra Foto
+          </button>
+          <button id="btn-start-drawing" class="btn-accent btn-large">
+            🚀 Desenhar no Robô UR3
+          </button>
+        </div>
+      </section>
+
+      <!-- ETAPA 3: DESENHANDO AO VIVO NO ROBÔ -->
+      <section id="step-drawing" class="view-section hidden">
+        <div class="drawing-live-card">
+          <div class="drawing-header">
+            <div class="robot-anim-badge">
+              <span class="pulse-ring"></span>
+              🤖 Robô em Ação
+            </div>
+            <h2 id="drawing-headline">Desenhando seu Retrato...</h2>
+            <p id="drawing-submessage">Acompanhe os traços ao vivo no papel A6!</p>
+          </div>
+
+          <!-- Barra de Progresso Circular ou Linear -->
+          <div class="progress-container">
+            <div class="progress-bar-bg">
+              <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+            <div class="progress-info">
+              <span id="progress-percent-label">0%</span>
+              <span id="progress-status-text">Iniciando...</span>
+            </div>
+          </div>
+
+          <div class="drawing-display">
+            <div id="drawing-svg-live" class="svg-wrapper">
+              <!-- SVG do desenho atual -->
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <button id="btn-abort-drawing" class="btn-danger">
+              ⏹️ Parar / Cancelar Desenho
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ETAPA 4: CONCLUÍDO -->
+      <section id="step-completed" class="view-section hidden">
+        <div class="completed-card">
+          <span class="celebration-icon">🎉</span>
+          <h2>Obra de Arte Pronta!</h2>
+          <p>O robô UR3 finalizou o seu retrato.</p>
+          <p class="take-paper-alert">👉 Por favor, retire sua folha A6 da prancheta!</p>
+          
+          <div class="download-box">
+            <p class="hint">Guarde também uma cópia digital para postar nas redes sociais:</p>
+            <div class="action-bar-split">
+              <button id="btn-download-svg" class="btn-secondary">
+                💾 Baixar Vetor (SVG)
+              </button>
+              <button id="btn-download-img" class="btn-secondary">
+                🖼️ Baixar Imagem (JPG)
+              </button>
+            </div>
+          </div>
+
+          <button id="btn-new-portrait" class="btn-primary btn-large">
+            ✨ Próximo Convidado
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MODAL DO OPERADOR / CALIBRAÇÃO -->
+    <div id="operator-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>⚙️ Painel do Operador (Setup do Evento)</h3>
+          <button id="btn-close-modal" class="btn-close">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="calib-section">
+            <h4>Calibração da Caneta & Papel A6</h4>
+            <p class="hint">A caneta possui 2mm de amortecimento com mola.</p>
+            
+            <div class="btn-grid">
+              <button id="btn-calib-touch" class="btn-outline">
+                ✏️ Testar Toque da Caneta (8mm)
+              </button>
+              <button id="btn-calib-origin" class="btn-outline">
+                📍 Definir Posição Atual como Origem A6
+              </button>
+              <button id="btn-move-home" class="btn-outline">
+                🏠 Mover Robô para HOME
+              </button>
+            </div>
+          </div>
+
+          <div class="info-table">
+            <div class="info-row">
+              <span>IP do Robô UR3:</span>
+              <code id="info-robot-ip">{{ robot_ip }}</code>
+            </div>
+            <div class="info-row">
+              <span>Porta de Envio:</span>
+              <code>30002 (URScript)</code>
+            </div>
+            <div class="info-row">
+              <span>Porta Handshake:</span>
+              <code>50007 (Sync)</code>
+            </div>
+            <div class="info-row">
+              <span>Margens Reservadas:</span>
+              <code>Topo: 20mm | Base: 20mm</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
+
